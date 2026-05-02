@@ -1807,6 +1807,31 @@ link a: Tests @ https://tests.contoso.com/?svc=alice@contoso.com
   `)
     ).rejects.toThrow(/must be created using 'create actor c'/i);
   });
+
+  it('should record the correct message index for create participant when rect precedes the create message', async () => {
+    const diagram = await Diagram.fromText(`
+  sequenceDiagram
+  participant a
+  future participant c
+  participant b
+  a ->> b: first
+  create participant c
+  rect rgb(200, 150, 255)
+    b ->> c: create c inside rect
+  end
+  `);
+
+    const createdActors = diagram.db.getCreatedActors();
+    const messages = diagram.db.getMessages();
+
+    // The RECT_START signal is inserted between createParticipant and the create message,
+    // so the create message lands at index 2 (not 1). The fix ensures createdActors
+    // records the actual index of the create message, not the index at createParticipant time.
+    const createMsgIndex = messages.findIndex(
+      (m) => m.to === 'c' && m.message === 'create c inside rect'
+    );
+    expect(createdActors.get('c')).toEqual(createMsgIndex);
+  });
 });
 describe('when checking the bounds in a sequenceDiagram', function () {
   beforeAll(() => {

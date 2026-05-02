@@ -725,6 +725,13 @@ export class SequenceDB implements DiagramDB {
                 ' does not have an associated creating message after its declaration. Please check the sequence diagram.'
             );
           } else {
+            // Update createdActors to the actual index of the create message, which may
+            // differ from the index recorded in createParticipant if intervening signals
+            // (e.g. rectStart) were added to the messages array in between.
+            this.state.records.createdActors.set(
+              this.state.records.lastCreated.name,
+              this.state.records.messages.length
+            );
             this.state.records.lastCreated = undefined;
           }
         } else if (this.state.records.lastDestroyed) {
