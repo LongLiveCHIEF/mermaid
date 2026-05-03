@@ -64,7 +64,14 @@ You may also need to reload `.shrc` or `.bashrc` afterwards.
 
 **Docker**
 
-[Install Docker](https://docs.docker.com/engine/install/). And that is pretty much all you need.
+[Install Docker](https://docs.docker.com/engine/install/).
+
+You will also need to create a `.env` file that docker can read with the
+mermaid port you wish to use on your host.
+
+```bash
+echo "MERMAID_PORT=9000" > .env
+```
 
 Optionally, to run GUI (Cypress) within Docker you will also need an X11 server installed.
 You might already have it installed, so check this by running:
